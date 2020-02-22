@@ -36,15 +36,15 @@ def core(api):
     settings = cobbler_api.settings()
     xmlrpc_port = settings.xmlrpc_port
 
-    regen_ss_file()
+    regen_ss_file(settings)
     do_xmlrpc_tasks(cobbler_api, settings, xmlrpc_port)
 
 
-def regen_ss_file():
+def regen_ss_file(settings):
     # this is only used for Kerberos auth at the moment.
     # it identifies XMLRPC requests from Apache that have already
     # been cleared by Kerberos.
-    ssfile = "/var/lib/cobbler/web.ss"
+    ssfile = "%s/web.ss" % settings.data_dir
     fd = open("/dev/urandom", 'rb')
     data = fd.read(512)
     fd.close()
@@ -59,7 +59,7 @@ def regen_ss_file():
         http_user = "www-data"
     elif family == "suse":
         http_user = "wwwrun"
-    os.lchown("/var/lib/cobbler/web.ss", pwd.getpwnam(http_user)[2], -1)
+    os.lchown("%s/web.ss" % settings.data_dir, pwd.getpwnam(http_user)[2], -1)
 
     return 1
 
@@ -95,5 +95,5 @@ def do_xmlrpc_rw(cobbler_api, settings, port):
 if __name__ == "__main__":
     cobbler_api = cobbler_api.CobblerAPI()
     settings = cobbler_api.settings()
-    regen_ss_file()
+    regen_ss_file(settings)
     do_xmlrpc_rw(cobbler_api, settings, 25151)

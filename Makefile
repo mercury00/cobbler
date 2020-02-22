@@ -21,7 +21,8 @@ endif
 
 
 TOP_DIR:=$(shell pwd)
-DESTDIR=/
+DESTDIR ?= /
+DATADIR ?= /var/lib/cobbler
 
 prefix=devinstall
 statepath=/tmp/cobbler_settings/$(prefix)
@@ -136,9 +137,9 @@ savestate:
 # Check if we are on Red Hat, Suse or Debian based distribution
 restorestate:
 	@${PYTHON} setup.py -v restorestate --root $(DESTDIR); \
-	find $(DESTDIR)/var/lib/cobbler/triggers | xargs chmod +x
+	find $(DATADIR)/triggers | xargs chmod +x
 	if [ -n "`getent passwd apache`" ] ; then \
-		chown -R apache $(DESTDIR)/var/www/cobbler; \
+		chown -R apache $(DATADIR); \
 	elif [ -n "`getent passwd wwwrun`" ] ; then \
 		chown -R wwwrun $(DESTDIR)/usr/share/cobbler/web; \
 	elif [ -n "`getent passwd www-data`"] ; then \
@@ -195,14 +196,14 @@ rpms: release
 	-ba cobbler.spec
 
 eraseconfig:
-	-rm /var/lib/cobbler/collections/distros/*
-	-rm /var/lib/cobbler/collections/images/*
-	-rm /var/lib/cobbler/collections/profiles/*
-	-rm /var/lib/cobbler/collections/systems/*
-	-rm /var/lib/cobbler/collections/repos/*
-	-rm /var/lib/cobbler/collections/mgmtclasses/*
-	-rm /var/lib/cobbler/collections/files/*
-	-rm /var/lib/cobbler/collections/packages/*
+	-rm $(DATADIR)/collections/distros/*
+	-rm $(DATADIR)/collections/images/*
+	-rm $(DATADIR)/collections/profiles/*
+	-rm $(DATADIR)/collections/systems/*
+	-rm $(DATADIR)/collections/repos/*
+	-rm $(DATADIR)/collections/mgmtclasses/*
+	-rm $(DATADIR)/collections/files/*
+	-rm $(DATADIR)/collections/packages/*
 
 .PHONY: tags
 tags:

@@ -31,6 +31,9 @@ from cobbler.utils import _
 
 TESTMODE = False
 
+SYSCONF_DIR = "/etc/cobbler"
+DATA_DIR = "/var/lib/cobbler"
+
 # defaults is to be used if the config file doesn't contain the value we need
 DEFAULTS = {
     "allow_duplicate_hostnames": [0, "bool"],
@@ -41,13 +44,13 @@ DEFAULTS = {
     "anamon_enabled": [0, "bool"],
     "auth_token_expiration": [3600, "int"],
     "authn_pam_service": ["login", "str"],
-    "autoinstall_snippets_dir": ["/var/lib/cobbler/snippets", "str"],
-    "autoinstall_templates_dir": ["/var/lib/cobbler/templates", "str"],
+    "autoinstall_snippets_dir": ["%s/snippets" % DATA_DIR, "str"],
+    "autoinstall_templates_dir": ["%s/templates" % DATA_DIR, "str"],
     "bind_chroot_path": ["", "str"],
     "bind_master": ["127.0.0.1", "str"],
-    "boot_loader_conf_template_dir": ["/etc/cobbler/boot_loader_conf", "str"],
-    "bootloaders_dir": ["/var/lib/cobbler/loaders", "str"],
-    "grubconfig_dir": ["/var/lib/cobbler/grub_config", "str"],
+    "boot_loader_conf_template_dir": ["%s/boot_loader_conf" % SYSCONF_DIR, "str"],
+    "bootloaders_dir": ["%s/loaders" % DATA_DIR, "str"],
+    "grubconfig_dir": ["%s/grub_config" % DATA_DIR, "str"],
     "build_reporting_enabled": [0, "bool"],
     "build_reporting_ignorelist": ["", "str"],
     "build_reporting_sender": ["", "str"],
@@ -59,7 +62,8 @@ DEFAULTS = {
     "client_use_localhost": [0, "bool"],
     "cobbler_master": ["", "str"],
     "createrepo_flags": ["-c cache -s sha", "str"],
-    "default_autoinstall": ["/var/lib/cobbler/templates/default.ks", "str"],
+    "data_dir": [DATA_DIR, "str"],
+    "default_autoinstall": ["%s/templates/default.ks" % DATA_DIR, "str"],
     "default_name_servers": [[], "list"],
     "default_name_servers_search": [[], "list"],
     "default_ownership": [["admin"], "list"],
@@ -73,8 +77,8 @@ DEFAULTS = {
     "enable_gpxe": [0, "bool"],
     "enable_menu": [1, "bool"],
     "http_port": [80, "int"],
-    "include": [["/etc/cobbler/settings.d/*.settings"], "list"],
-    "iso_template_dir": ["/etc/cobbler/iso", "str"],
+    "include": [["%s/settings.d/*.settings" % SYSCONF_DIR], "list"],
+    "iso_template_dir": ["%s/iso" % SYSCONF_DIR, "str"],
     "kernel_options": [{}, "dict"],
     "ldap_anonymous_bind": [1, "bool"],
     "ldap_base_dn": ["DC=devel,DC=redhat,DC=com", "str"],
@@ -101,7 +105,7 @@ DEFAULTS = {
     "next_server": ["127.0.0.1", "str"],
     "nsupdate_enabled": [0, "bool"],
     "power_management_default_type": ["ipmitool", "str"],
-    "power_template_dir": ["/etc/cobbler/power", "str"],
+    "power_template_dir": ["%s/power" % SYSCONF_DIR, "str"],
     "proxy_url_ext": ["", "str"],
     "proxy_url_int": ["", "str"],
     "puppet_auto_setup": [0, "bool"],
@@ -129,8 +133,9 @@ DEFAULTS = {
     "serializer_pretty_json": [0, "bool"],
     "server": ["127.0.0.1", "str"],
     "sign_puppet_certs_automatically": [0, "bool"],
-    "signature_path": ["/var/lib/cobbler/distro_signatures.json", "str"],
+    "signature_path": ["%s/distro_signatures.json" % DATA_DIR, "str"],
     "signature_url": ["https://cobbler.github.io/signatures/3.0.x/latest.json", "str"],
+    "sysconf_dir": [SYSCONF_DIR, "str"],
     "tftpboot_location": ["/var/lib/tftpboot", "str"],
     "virt_auto_boot": [0, "bool"],
     "webdir": ["/var/www/cobbler", "str"],

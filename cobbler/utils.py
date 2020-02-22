@@ -512,14 +512,17 @@ def input_boolean(value):
 
 
 def update_settings_file(data):
-    if 1:
-        # clogger.Logger().debug("in update_settings_file(): value is: %s" % str(value))
-        settings_file = open("/etc/cobbler/settings", "w")
-        yaml.safe_dump(data, settings_file)
-        settings_file.close()
-        return True
-    # except:
-    #    return False
+    """ write the settings dictionary to the settings file
+    """
+    if data.sysconf_dir is not None:
+        settings_file = "%s/settings" % data.sysconf_dir
+    else:
+        settings_file = "/etc/cobbler/settings"
+    # clogger.Logger().debug("in update_settings_file(): value is: %s" % str(value))
+    settings_file = open(settings_file, "w")
+    yaml.safe_dump(data, settings_file)
+    settings_file.close()
+    return True
 
 
 def grab_tree(api_handle, item):
@@ -815,7 +818,7 @@ def run_triggers(api, ref, globber, additional=[], logger=None):
     ``ref`` can be a cobbler object, if not None, the name will be passed to the script. If ref is None, the script will
     be called with no argumenets. Globber is a wildcard expression indicating which triggers to run.
 
-    Example: ``/var/lib/cobbler/triggers/blah/*``
+    Example: ``%data_dir%/triggers/blah/*``
 
     As of Cobbler 1.5.X, this also runs cobbler modules that match the globbing paths.
     """
@@ -1822,17 +1825,18 @@ def get_valid_archs():
     return uniquify(archs)
 
 
-def get_shared_secret():
+def get_shared_secret(web_ss_filename='/var/lib/cobbler/web.ss'):
     """
     The 'web.ss' file is regenerated each time cobblerd restarts and is
     used to agree on shared secret interchange between the web server and
     cobblerd, and also the CLI and cobblerd, when username/password
     access is not required.  For the CLI, this enables root users
     to avoid entering username/pass if on the cobbler server.
+    default location is %data_dir%/web.ss
     """
 
     try:
-        fd = open("/var/lib/cobbler/web.ss", 'rb', encoding='utf-8')
+        fd = open(web_ss_filename, 'rb', encoding='utf-8')
         data = fd.read()
     except:
         return -1

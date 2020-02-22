@@ -78,7 +78,7 @@ class CobblerThread(Thread):
     def run(self):
         time.sleep(1)
         try:
-            if utils.run_triggers(self.api, None, "/var/lib/cobbler/triggers/task/%s/pre/*" % self.task_name, self.options, self.logger):
+            if utils.run_triggers(self.api, None, "%s/triggers/task/%s/pre/*" % (self.api.settings().data_dir, self.task_name), self.options, self.logger):
                 self.remote._set_task_state(self, self.event_id, EVENT_FAILED)
                 return False
             rc = self._run(self)
@@ -87,7 +87,7 @@ class CobblerThread(Thread):
             else:
                 self.remote._set_task_state(self, self.event_id, EVENT_COMPLETE)
                 self.on_done()
-                utils.run_triggers(self.api, None, "/var/lib/cobbler/triggers/task/%s/post/*" % self.task_name, self.options, self.logger)
+                utils.run_triggers(self.api, None, "%s/triggers/task/%s/post/*" % (self.api.settings().data_dir, self.task_name), self.options, self.logger)
             return rc
         except:
             utils.log_exc(self.logger)
@@ -1468,7 +1468,7 @@ class CobblerXMLRPCInterface(object):
         # we do not do API lookups here because they are rather expensive at install
         # time if reinstalling all of a cluster all at once.
         # we can do that at "cobbler check" time.
-        utils.run_triggers(self.api, None, "/var/lib/cobbler/triggers/install/%s/*" % mode, additional=[objtype, name, ip], logger=self.logger)
+        utils.run_triggers(self.api, None, "%s/triggers/install/%s/*" % (self.api.settings().data_dir, mode), additional=[objtype, name, ip], logger=self.logger)
         return True
 
     def version(self, token=None, **rest):
