@@ -172,12 +172,13 @@ class CobblerAPI(object):
         Returns the time of the last modification to cobbler, made by any
         API instance, regardless of the serializer type.
         """
-        if not os.path.exists(self.settings.data_dir + "/.mtime"):
-            fd = open(self.settings.data_dir + "/.mtime", 'w')
+        mtime_file = self.settings().data_dir + "/.mtime"
+        if not os.path.exists(mtime_file):
+            fd = open(mtime_file, 'w')
             fd.write("0")
             fd.close()
             return float(0)
-        fd = open(self.settings.data_dir + "/.mtime", 'r')
+        fd = open(mtime_file, 'r')
         data = fd.read().strip()
         return float(data)
 
@@ -210,7 +211,7 @@ class CobblerAPI(object):
             version_tuple -- something like [ 1, 3, 2 ]
         """
         config = ConfigParser()
-        config.read(self.settings.sysconf_dir + "/version")
+        config.read(self.settings().sysconf_dir + "/version")
         data = {}
         data["gitdate"] = config.get("cobbler", "gitdate")
         data["gitstamp"] = config.get("cobbler", "gitstamp")
