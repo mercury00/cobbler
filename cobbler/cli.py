@@ -328,12 +328,14 @@ class CobblerCLI(object):
             traceback.print_exc()
             sys.exit(411)
 
-        if not os.path.exists("/var/lib/cobbler/web.ss"):
+        settings = self.remote.get_settings()
+        data_dir = settings.get("data_dir")
+        if not os.path.exists("%s/web.ss" % data_dir):
             print("Missing login credentials file.  Has cobblerd failed to start?", file=sys.stderr)
             sys.exit(411)
 
-        if not os.access("/var/lib/cobbler/web.ss", os.R_OK):
-            print("User cannot run command line, need read access to /var/lib/cobbler/web.ss", file=sys.stderr)
+        if not os.access("%s/web.ss" % data_dir, os.R_OK):
+            print("User cannot run command line, need read access to %s/web.ss" % data_dir, file=sys.stderr)
             sys.exit(411)
 
     def run(self, args):
@@ -446,7 +448,7 @@ class CobblerCLI(object):
             if object_action in ["add", "edit", "copy", "rename", "remove"]:
                 try:
                     if object_type == "setting":
-                        settings = self.remote.get_settings()
+                        #settings = self.remote.get_settings()
                         if options.value is None:
                             raise RuntimeError("You must specify a --value when editing a setting")
                         elif not settings.get('allow_dynamic_settings', False):
@@ -490,7 +492,8 @@ class CobblerCLI(object):
             elif object_action == "update":
                 task_id = self.remote.background_signature_update(utils.strip_none(vars(options), omit_none=True), self.token)
             elif object_action == "reload":
-                filename = opt(options, "filename", "/var/lib/cobbler/distro_signatures.json")
+                signature_path = settings.get("signature_path")
+                filename = opt(options, "filename", signature_path)
                 try:
                     utils.load_signatures(filename, cache=True)
                 except:
@@ -580,7 +583,7 @@ class CobblerCLI(object):
             (options, args) = self.parser.parse_args()
             task_id = self.start_task("validate_autoinstall_files", options)
         elif action_name == "get-loaders":
-            self.parser.add_option("--force", dest="force", action="store_true", help="overwrite any existing content in /var/lib/cobbler/loaders")
+            self.parser.add_option("--force", dest="force", action="store_true", help="overwrite any existing content in %data_dir%/loaders")
             (options, args) = self.parser.parse_args()
             task_id = self.start_task("dlcontent", options)
         elif action_name == "import":
