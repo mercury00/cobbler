@@ -203,26 +203,35 @@ class Settings(object):
             sys.exit(1)
 
     def _clear(self):
+        """
+        reset values to defaults
+        """
         self.__dict__ = {}
         for key in list(DEFAULTS.keys()):
             self.__dict__[key] = DEFAULTS[key][0]
 
     def set(self, name, value):
+        """
+        wrapper for set method
+        """
         return self.__setattr__(name, value)
 
-    def to_string(self):
+    def to_string(self) -> str:
+        """
+        Write out kernel opts dict as string
+        """
         buf = ""
         buf += _("defaults\n")
         buf += _("kernel options  : %s\n") % self.__dict__['kernel_options']
         return buf
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """
         Return an easily serializable representation of the config.
         """
         return self.__dict__
 
-    def from_dict(self, _dict):
+    def from_dict(self, _dict) -> object:
         """
         Modify this object to load values in dictionary.
         """
@@ -236,6 +245,10 @@ class Settings(object):
         return self
 
     def __setattr__(self, name, value):
+        """
+        Override the setattr method so we can get values as elements
+        instead of as dictionary keys
+        """
         if name in DEFAULTS:
             try:
                 if DEFAULTS[name][1] == "str":
@@ -268,10 +281,13 @@ class Settings(object):
             pass
 
     def __getattr__(self, name):
+        """
+        Override the getattr method to properly handle our dictionary
+        """
         try:
             if name == "kernel_options":
                 # backwards compatibility -- convert possible string value to dict
-                (success, result) = utils.input_string_or_dict(self.__dict__[name], allow_multiples=False)
+                (_, result) = utils.input_string_or_dict(self.__dict__[name], allow_multiples=False)
                 self.__dict__[name] = result
                 return result
             return self.__dict__[name]

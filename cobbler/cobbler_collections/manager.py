@@ -134,14 +134,20 @@ class CollectionManager(object):
         Save all cobbler_collections to disk
         """
 
-        serializer.serialize(self._distros)
-        serializer.serialize(self._repos)
-        serializer.serialize(self._profiles)
-        serializer.serialize(self._images)
-        serializer.serialize(self._systems)
-        serializer.serialize(self._mgmtclasses)
-        serializer.serialize(self._packages)
-        serializer.serialize(self._files)
+        for collection in (
+            self._distros,
+            self._repos,
+            self._profiles,
+            self._images,
+            self._systems,
+            self._mgmtclasses,
+            self._packages,
+            self._files,
+        ):
+            try:
+                serializer.serialize(collection)
+            except Exception as e:
+                raise CX("serializer: error writing collection %s: %s. Check %%sysconf_dir%%/modules.conf" % (collection.collection_type(), e))
 
     def serialize_item(self, collection, item):
         """
@@ -184,7 +190,7 @@ class CollectionManager(object):
             try:
                 serializer.deserialize(collection)
             except Exception as e:
-                raise CX("serializer: error loading collection %s: %s. Check /etc/cobbler/modules.conf" % (collection.collection_type(), e))
+                raise CX("serializer: error loading collection %s: %s. Check %%sysconf_dir%%/modules.conf" % (collection.collection_type(), e))
 
     def get_items(self, collection_type):
         if collection_type == "distro":
