@@ -64,7 +64,7 @@
 %define apache_mod_wsgi python%{python3_pkgversion}-mod_wsgi
 %define tftpboot_dir /var/lib/tftpboot
 %define tftpsrv_pkg tftp-server
-%define createrepo_pkg %{?el7:createrepo}%{!?el7:createrepo_c}
+%define createrepo_pkg createrepo_c
 %define grub2_x64_efi_pkg grub2-efi-x64
 %define grub2_ia32_efi_pkg grub2-efi-ia32
 %define system_release_pkg system-release
@@ -292,7 +292,7 @@ if [ $1 -ge 2 ]; then
     if [ ! -d "%{_sharedstatedir}/cobbler/backup/upgrade-${DATE}" ]; then
         mkdir -p "%{_sharedstatedir}/cobbler/backup/upgrade-${DATE}"
     fi
-    for i in "config" "snippets" "kickstarts" "triggers" "scripts"; do
+    for i in "config" "snippets" "templates" "triggers" "scripts"; do
         if [ -d "%{_sharedstatedir}/cobbler/${i}" ]; then
             cp -r "%{_sharedstatedir}/cobbler/${i}" "%{_sharedstatedir}/cobbler/backup/upgrade-${DATE}"
         fi
@@ -348,6 +348,7 @@ sed -i -e "s/SECRET_KEY = ''/SECRET_KEY = \'$RAND_SECRET\'/" %{_datadir}/cobbler
 %{_bindir}/cobbler-ext-nodes
 %{_bindir}/cobblerd
 %{_sbindir}/tftpd.py
+%{_sbindir}/fence_ipmitool
 %dir %{_datadir}/cobbler
 %{_datadir}/cobbler/bin
 %{_mandir}/man1/cobbler.1*
